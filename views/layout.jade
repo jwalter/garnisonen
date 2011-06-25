@@ -1,5 +1,9 @@
 !!! 5
-meta(name="viewport", content="user-scalable=no, width=device-width")
-title Äta på Garnisonen
-body
-section#wrapper!= body
+html
+  head
+    title Äta på Garnisonen
+    meta(name="viewport", content="user-scalable=no, width=device-width")
+    link(rel='stylesheet', href='/stylesheets/style.css')
+
+  body
+    != body
