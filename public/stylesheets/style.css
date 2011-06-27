@@ -54,3 +54,30 @@ ul li:last-child a {
     -webkit-border-bottom-left-radius: 8px;
     -webkit-border-bottom-right-radius: 8px;
 }
+table tr td:first-child {
+    background-color: #FFFFFF;
+    border: 1px solid #999999;
+}
+div.clear
+{
+    clear:both;
+}
+div.dish
+{
+    border-left:1px solid gray;
+    padding:1em;
+    float:left;
+}
+div.day {
+    float:left;
+    width:60px;
+    margin:-1px;
+    padding:1em;
+    background-color: #FFFFFF;
+    border: 1px solid #999999;
+    color: #222222;
+    font-size: 17px;
+    margin-bottom: 1px;
+    padding: 12px 10px;
+    text-decoration: none;
+}

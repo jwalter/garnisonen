@@ -16,7 +16,7 @@ app.get("/", function(req, res) {
     res.render("index", {title: "Välj restaurang"});
 });
 var days = "M�ndagTisdagOnsdagTorsdagFredag";
-var dayNames = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
+var dayNames = ["Må", "Ti", "On", "To", "Fr"];
 app.get("/du-o-ja", function(req, res) {
     scraper(
         {
