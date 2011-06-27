@@ -13,19 +13,51 @@ app.configure(function(){
    app.use(express.static(__dirname + '/public'));
 });
 app.get("/", function(req, res) {
-    res.render("index");
+    res.render("index", {title: "Välj restaurang"});
 });
-
-app.get("/lunch", function(req, res) {
-    scraper("http://du-o-ja.se/", function(err, jQuery) {
+var days = "M�ndagTisdagOnsdagTorsdagFredag";
+var dayNames = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag"];
+app.get("/du-o-ja", function(req, res) {
+    scraper(
+        {
+            "uri": "http://du-o-ja.se/",
+            "encoding": "utf8"
+        }
+        , function(err, jQuery) {
         if (err) {throw err;}
         var menu = "";
-        jQuery("p").first().contents().filter("h5").wrap("<h5></h5>").end().
+        var menuFound = false;
+        var header = "";
+        var dishes = new Array();
+        var lastRowWasDay = false;
+        jQuery("p").first().contents().filter("h5").remove().end().
         each(function() {
-            menu += jQuery(this).text().trim() + "<BR>";
+            var curText = jQuery(this).text().trim();
+            if (!menuFound) {
+                menuFound = curText.indexOf("Lunchmeny v.") != -1;
+                if (menuFound) {
+                    header = curText;
+                    menu = "h1 " + curText + "\n";
+                }
+            }
+            if (curText.length > 0) {
+                if (lastRowWasDay) {
+                    dishes.push(convert(curText));
+                    lastRowWasDay = false;
+                    console.log("Adding dish: " + curText);
+                } else if (menuFound) {
+                    console.log("curText=" + curText);
+                    lastRowWasDay = days.indexOf(curText) != -1;
+                    menu += curText;
+                }
+            }
         });
-        res.send(menu);
+        res.render("lunch", {title: "Du-o-ja", header: header, dishes: dishes, dayNames: dayNames});
     });
 });
 
 app.listen(process.env.C9_PORT);
+
+function convert(str) {
+    return str;
+}

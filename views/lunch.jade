@@ -1,7 +1,6 @@
-h1 Välj restaurang
+h1 #{header} 
 
 ul
- li
-  a(href="/lunch?r=b") Brigaden
- li
-  a(href="du-o-ja") Du-o-ja
+  - for (var dish in dishes)
+    li= dayNames[dish]
+    li= dishes[dish]
