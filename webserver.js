@@ -25,7 +25,7 @@ app.get("/brigaden", function(req, res) {
     scrapeBrigaden(req, res);
 });
 
-app.listen(process.env.C9_PORT);
+app.listen(8080);
 
 function scrapeDuOJa(req, res) {
     scraper(
