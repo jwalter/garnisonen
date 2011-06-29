@@ -15,7 +15,7 @@ app.configure(function(){
 app.get("/", function(req, res) {
     res.render("index", {title: "Välj restaurang"});
 });
-var days = "M�ndagTisdagOnsdagTorsdagFredag";
+var days = "MåndagTisdagOnsdagTorsdagFredag";
 var days2 = "Måndag:Tisdag:Onsdag:Torsdag:Fredag:";
 var dayNames = ["Må", "Ti", "On", "To", "Fr"];
 app.get("/du-o-ja", function(req, res) {
@@ -31,7 +31,7 @@ function scrapeDuOJa(req, res) {
     scraper(
         {
             "uri": "http://du-o-ja.se/",
-            "encoding": "utf8"
+            "encoding": "binary"
         }
         , function(err, jQuery) {
         var header = "";
