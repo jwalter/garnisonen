@@ -28,45 +28,6 @@ app.get('/brigaden', function(req, res) {
 app.listen(8080);
 console.log('Listening on 8080')
 
-function scrapeDuOJa(req, res) {
-    scraper(
-        {
-            'uri': 'http://du-o-ja.se/',
-            'encoding': 'binary'
-        }
-        , function(err, jQuery) {
-        var header = '';
-        var dishes = new Array();
-        if (err) {throw err;}
-        var menu = '';
-        var menuFound = false;
-        var lastRowWasDay = false;
-        jQuery('p').first().contents().filter('h5').remove().end().
-        each(function() {
-            var curText = jQuery(this).text().trim();
-            if (!menuFound) {
-                menuFound = curText.indexOf('Lunchmeny v.') != -1;
-                if (menuFound) {
-                    header = curText;
-                    menu = 'h1 ' + curText + '\n';
-                }
-            }
-            if (curText.length > 0) {
-                if (lastRowWasDay) {
-                    dishes.push(curText);
-                    lastRowWasDay = false;
-                    console.log('Adding dish: ' + curText);
-                } else if (menuFound) {
-                    console.log('curText=' + curText);
-                    lastRowWasDay = days.indexOf(curText) != -1;
-                    menu += curText;
-                }
-            }
-        });
-        res.render('lunch', {title: 'Du-o-ja', header: header, dishes: dishes, dayNames: dayNames});
-    });
-}
-
 function scrapeBrigaden(req, res) {
     scraper(
         {
@@ -82,13 +43,18 @@ function scrapeBrigaden(req, res) {
         var lastRowWasDay = false;
         var dishesLeft = 0;
         var dishText = '';
-        header = jQuery('span').find('h2').text().trim();
+        header = 'Brigaden ' + jQuery('span').find('h2').text().trim();
         jQuery('span').find('p').
         each(function() {
             var curText = jQuery(this).find('strong').text().trim();//.end().text().trim();
             if (curText.length > 0 && days2.indexOf(curText) != -1) {
                 console.log('curText=' + curText);
-                dishesLeft = 2;
+                if (curText === 'Måndag:') {
+                    dishText = jQuery(this).contents().last().text();
+                    dishesLeft = 1;
+                } else {
+                  dishesLeft = 2;                    
+                }
             } else if (dishesLeft > 0) {
                 curText = jQuery(this).text().trim();
                 if (dishesLeft == 2) {
