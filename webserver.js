@@ -3,6 +3,8 @@ var express = require('express');
 var scraper = require('scraper');
 var app = module.exports = express.createServer();
 var duoja = require('./du-o-ja');
+var days2 = 'Måndag:Tisdag:Onsdag:Torsdag:Fredag:';
+var dayNames = ['Må', 'Ti', 'On', 'To', 'Fr'];
 
 app.configure(function(){
    app.set('views', __dirname + '/views');
@@ -16,17 +18,61 @@ app.configure(function(){
 app.get('/', function(req, res) {
     res.render('index', {title: 'Välj restaurang'});
 });
-var days2 = 'Måndag:Tisdag:Onsdag:Torsdag:Fredag:';
-var dayNames = ['Må', 'Ti', 'On', 'To', 'Fr'];
+
+var duojaCached = new CachingScraper(duoja);
+
 app.get('/du-o-ja', function(req, res) {
-    duoja.scrape(req, res);
+  scrapeAndRender(duojaCached, req, res);
 });
+
 app.get('/brigaden', function(req, res) {
     scrapeBrigaden(req, res);
 });
 
+app.get('/test', function(req, res) {
+  res.render('test', {title: 'Test'});
+});
+
 app.listen(8080);
 console.log('Listening on 8080')
+
+function scrapeAndRender(menuScraper, req, res) {
+  menuScraper.scrape(req, res, function(dishes, header) {
+    renderMenu(res, menuScraper.title(), header, dishes)
+    });
+}
+
+function renderMenu(res, title, header, dishes) {
+  res.render('lunch', {title: title, header: header, dishes: dishes, dayNames: dayNames});
+}
+
+function CachingScraper(scraper) {
+  this.lastScrapeTime = 0; 
+  this.backingScraper = scraper;
+  this.scrape = cachingScrape;
+  this.cachedDishes;
+  this.cachedHeader;
+  this.title = function() {
+    return this.backingScraper.title();  
+  };
+}
+
+function cachingScrape(req, res, handler) {
+  var currentTime = new Date().getTime();
+  var diff = currentTime - this.lastScrapeTime;
+  if (diff < 5 * 60 * 1000) {
+    console.log('Cached menu is ' + diff + ' ms old, reusing cached one');
+    handler(cachedDishes, cachedHeader);
+  } else {
+    console.log('Cached menu is ' + diff + ' ms old, getting new one');
+    this.backingScraper.scrape(req, res, function(dishes, header) {
+        cachedDishes = dishes;
+        cachedHeader = header;
+        handler(dishes, header);
+    });      
+    this.lastScrapeTime = currentTime;
+  }
+}
 
 function scrapeBrigaden(req, res) {
     scraper(

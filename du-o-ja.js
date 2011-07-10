@@ -1,6 +1,6 @@
 var scraper = require('scraper');
 
-exports.scrape = function (req, res) {
+exports.scrape = function (req, res, resultHandler) {
   scraper(
   {
     'uri': 'http://du-o-ja.se/',
@@ -9,13 +9,16 @@ exports.scrape = function (req, res) {
   , 
   function(err, jQuery) {
     if (err) {throw err;}
-    res.render('lunch', parseJQuery(jQuery));
+    parseJQuery(jQuery, resultHandler);
   });
 }
 
-function parseJQuery(jQuery) {
+exports.title = function() {
+  return 'Du-o-ja';
+}
+
+function parseJQuery(jQuery, resultHandler) {
   console.log("Parsing");
-  var dayNames = ['Må', 'Ti', 'On', 'To', 'Fr'];
   var header = '';
   var dishes = new Array();
   var days = 'MåndagTisdagOnsdagTorsdagFredag';
@@ -41,5 +44,5 @@ function parseJQuery(jQuery) {
       }
     }
   });
-  return {title: 'Du-o-ja', header: header, dishes: dishes, dayNames: dayNames};
+  resultHandler(dishes, header);
 }
