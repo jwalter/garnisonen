@@ -1,1 +1,7 @@
-Node.js-baserad webapplikation för mobil-anpassad visning av veckans lunchmeny för Brigaden och Du-o-ja på Garnisonsområdet i Linköping
+Node.js-baserad webapplikation för mobil-anpassad visning av veckans lunchmeny för Brigaden och Du-o-ja på Garnisonsområdet i Linköping.
+
+Alpha-version av JSON-API:
+http://host.com/brigaden/json
+http://host.com/du-o-ja/json
+
+The JSON API is very likely to change. Someday.
