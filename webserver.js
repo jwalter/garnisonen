@@ -42,19 +42,19 @@ app.get('/test', function(req, res) {
   res.render('test', {title: 'Test'});
 });
 
-app.listen(8080);
-//app.listen(process.env.C9_PORT);
-console.log('Listening on 8080')
+//app.listen(8080);
+app.listen(process.env.C9_PORT);
+console.log('Listening on 8080');
 
 function scrapeAndRender(menuScraper, req, res) {
   menuScraper.scrape(req, res, function(dishes, header) {
-    renderMenu(res, menuScraper.title(), header, dishes)
+    renderMenu(res, menuScraper.title(), header, dishes);
     });
 }
 
 function scrapeAndJson(menuScraper, req, res) {
   menuScraper.scrape(req, res, function(dishes, header) {
-    jsonMenu(res, menuScraper.title(), header, dishes)
+    jsonMenu(res, menuScraper.title(), header, dishes);
     });
 }
 
@@ -67,11 +67,9 @@ function jsonMenu(res, title, header, dishes) {
 }
 
 function CachingScraper(scraper) {
-  this.lastScrapeTime = 0; 
+  this.lastScrapeTime = 0;
   this.backingScraper = scraper;
   this.scrape = cachingScrape;
-  this.cachedDishes;
-  this.cachedHeader;
   this.title = function() {
     return this.backingScraper.title();  
   };
@@ -80,16 +78,17 @@ function CachingScraper(scraper) {
 function cachingScrape(req, res, handler) {
   var currentTime = new Date().getTime();
   var diff = currentTime - this.lastScrapeTime;
+  var self = this;
   if (diff < 5 * 60 * 1000) {
     console.log('Cached menu is ' + diff + ' ms old, reusing cached one');
-    handler(cachedDishes, cachedHeader);
+    handler(this.cachedDishes, this.cachedHeader);
   } else {
     console.log('Cached menu is ' + diff + ' ms old, getting new one');
     this.backingScraper.scrape(req, res, function(dishes, header) {
-        cachedDishes = dishes;
-        cachedHeader = header;
+        self.cachedDishes = dishes;
+        self.cachedHeader = header;
         handler(dishes, header);
-    });      
+    });
     this.lastScrapeTime = currentTime;
   }
 }
