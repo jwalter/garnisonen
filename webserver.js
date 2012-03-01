@@ -32,7 +32,10 @@ app.get('/du-o-ja/json', function(req, res) {
 
 app.get('/brigaden', function(req, res) {
     scrapeAndRender(brigadenCached, req, res);
-    //scrapeBrigaden(req, res);
+});
+
+app.get('/brigaden/json', function(req, res) {
+  scrapeAndJson(brigadenCached, req, res);
 });
 
 app.get('/test', function(req, res) {
@@ -40,6 +43,7 @@ app.get('/test', function(req, res) {
 });
 
 app.listen(8080);
+//app.listen(process.env.C9_PORT);
 console.log('Listening on 8080')
 
 function scrapeAndRender(menuScraper, req, res) {
