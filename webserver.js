@@ -1,9 +1,8 @@
 require('jade');
 var express = require('express');
-var scraper = require('scraper');
 var app = module.exports = express.createServer();
 var duoja = require('./du-o-ja');
-var days2 = 'Måndag:Tisdag:Onsdag:Torsdag:Fredag:';
+var brigaden = require('./brigaden');
 var dayNames = ['Må', 'Ti', 'On', 'To', 'Fr'];
 
 app.configure(function(){
@@ -15,18 +14,25 @@ app.configure(function(){
    app.use(app.router);
    app.use(express.static(__dirname + '/public'));
 });
+
 app.get('/', function(req, res) {
     res.render('index', {title: 'Välj restaurang'});
 });
 
 var duojaCached = new CachingScraper(duoja);
+var brigadenCached = new CachingScraper(brigaden);
 
 app.get('/du-o-ja', function(req, res) {
   scrapeAndRender(duojaCached, req, res);
 });
 
+app.get('/du-o-ja/json', function(req, res) {
+  scrapeAndJson(duojaCached, req, res);
+});
+
 app.get('/brigaden', function(req, res) {
-    scrapeBrigaden(req, res);
+    scrapeAndRender(brigadenCached, req, res);
+    //scrapeBrigaden(req, res);
 });
 
 app.get('/test', function(req, res) {
@@ -42,8 +48,18 @@ function scrapeAndRender(menuScraper, req, res) {
     });
 }
 
+function scrapeAndJson(menuScraper, req, res) {
+  menuScraper.scrape(req, res, function(dishes, header) {
+    jsonMenu(res, menuScraper.title(), header, dishes)
+    });
+}
+
 function renderMenu(res, title, header, dishes) {
   res.render('lunch', {title: title, header: header, dishes: dishes, dayNames: dayNames});
+}
+
+function jsonMenu(res, title, header, dishes) {
+  res.send({title: title, header: header, dishes: dishes, dayNames: dayNames});
 }
 
 function CachingScraper(scraper) {
@@ -72,48 +88,4 @@ function cachingScrape(req, res, handler) {
     });      
     this.lastScrapeTime = currentTime;
   }
-}
-
-function scrapeBrigaden(req, res) {
-    scraper(
-        {
-            'uri': 'http://www.brigaden.net/1/1.0.1.0/26/1/',
-            'encoding': 'utf8'
-        }
-        , function(err, jQuery) {
-        var header = '';
-        var dishes = new Array();
-        if (err) {throw err;}
-        var menu = '';
-        var menuFound = false;
-        var lastRowWasDay = false;
-        var dishesLeft = 0;
-        var dishText = '';
-        header = 'Brigaden ' + jQuery('span').find('h2').text().trim();
-        jQuery('span').find('p').
-        each(function() {
-            var curText = jQuery(this).find('strong').text().trim();//.end().text().trim();
-            if (curText.length > 0 && days2.indexOf(curText) != -1) {
-                console.log('curText=' + curText);
-                if (curText === 'Måndag:') {
-                    dishText = jQuery(this).contents().last().text();
-                    dishesLeft = 1;
-                } else {
-                  dishesLeft = 2;                    
-                }
-            } else if (dishesLeft > 0) {
-                curText = jQuery(this).text().trim();
-                if (dishesLeft == 2) {
-                    dishText = curText;
-                } else {
-                    dishText += '<BR>' + curText;
-                    dishes.push(dishText);
-                }
-                console.log('dish=' + curText);
-                dishesLeft--;
-            }
-            
-        });
-        res.render('lunch', {title: 'Brigaden', header: header, dishes: dishes, dayNames: dayNames});
-    });
 }
