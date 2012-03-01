@@ -42,8 +42,8 @@ app.get('/test', function(req, res) {
   res.render('test', {title: 'Test'});
 });
 
-//app.listen(8080);
-app.listen(process.env.C9_PORT);
+app.listen(8080);
+//app.listen(process.env.C9_PORT);
 console.log('Listening on 8080');
 
 function scrapeAndRender(menuScraper, req, res) {
