@@ -1,7 +1,27 @@
 Node.js-baserad webapplikation för mobil-anpassad visning av veckans lunchmeny för Brigaden och Du-o-ja på Garnisonsområdet i Linköping.
 
-Alpha-version av JSON-API:
-http://host.com/brigaden/json
-http://host.com/du-o-ja/json
+JSON API
+För båda restaurangerna kan man lägga till /json i slutat av URL:en för att få ut aktuell veckas meny i JSON-format. Formatet ser ut som följer:
 
-The JSON API is very likely to change. Someday.
+{
+  "title": "Brigaden",
+  "header": "Brigaden Meny vecka 9",
+  "offers": [
+    {
+      "day": "Måndag",
+      "shortDay": "Må",
+      "dishes": [
+        "Viltsvinsprinskorv med stuvad spenat och ägghalva",
+        "Kalv &amp; lammfärslimpa med 3 sorters pepparsås"
+      ]
+    },
+    {
+      "day": "Tisdag",
+      "shortDay": "Ti",
+      "dishes": [
+        "Stekt fläsk med bruna bönor/löksås &amp; kokt potatis",
+        "Pocherad fiskfilé med purjolök, hummersås &amp; kokt potatis"
+      ]
+    }
+  ]
+}
