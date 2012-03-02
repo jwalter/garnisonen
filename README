@@ -1,4 +1,6 @@
-Node.js-baserad webapplikation för mobil-anpassad visning av veckans lunchmeny för Brigaden och Du-o-ja på Garnisonsområdet i Linköping.
+Node.js-baserad webapplikation för mobil-anpassad visning av veckans lunchmeny för restaurangerna Brigaden och Du-o-ja på Garnisonsområdet i Linköping.
+
+Applikationen kör för närvarande på http://mat.waltersson.com
 
 JSON API
 För båda restaurangerna kan man lägga till /json i slutat av URL:en (t.ex. http://mat.waltersson.com/du-o-ja/json) för att få ut aktuell veckas meny i JSON-format. Formatet ser ut som följer:
