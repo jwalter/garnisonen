@@ -1,6 +1,9 @@
 h1 #{header} 
 table
- - for (var dish in dishes)
+ - for (var offer in offers)
   tr 
-   td= dayNames[dish]
-   td!= dishes[dish]
+   td= offers[offer].shortDay
+   td 
+    - for (var dishRow in offers[offer].dishes)
+     !=offers[offer].dishes[dishRow]
+     br

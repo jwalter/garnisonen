@@ -1,4 +1,5 @@
 var scraper = require('scraper');
+var Offer = require('./offer');
 
 exports.scrape = function (req, res, resultHandler) {
   scraper(
@@ -21,9 +22,11 @@ function parseJQuery(jQuery, resultHandler) {
   console.log("Parsing");
   var header = '';
   var dishes = new Array();
+  var offers = new Array();
   var days = 'MåndagTisdagOnsdagTorsdagFredag';
   var menuFound = false;
   var lastRowWasDay = false;
+  var curDay = '';
   jQuery('p').first().contents().filter('h5').remove().end().
   each(function parseRow() {
     var curText = jQuery(this).text().trim();
@@ -36,13 +39,23 @@ function parseJQuery(jQuery, resultHandler) {
     if (curText.length > 0) {
       if (lastRowWasDay) {
         dishes.push(curText);
+        o = new Offer();
+        o.day = curDay;
+        o.shortDay = curDay.substring(0, 2);
+        o.dishes = dishes;
+        offers.push(o);
         lastRowWasDay = false;
         console.log('Adding dish: ' + curText);
       } else if (menuFound) {
         console.log('curText=' + curText);
+        if (days.indexOf(curText) != -1) {
+          lastRowWasDay = true;
+          curDay = curText;
+          dishes = new Array();
+        }
         lastRowWasDay = days.indexOf(curText) != -1;
       }
     }
   });
-  resultHandler(dishes, header);
+  resultHandler(offers, header);
 }
