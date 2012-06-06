@@ -6,17 +6,16 @@ exports.scrape = function (req, res, resultHandler) {
   {
     'uri': 'http://du-o-ja.se/',
     'encoding': 'binary'
-  }
-  , 
+  }, 
   function(err, jQuery) {
     if (err) {throw err;}
     parseJQuery(jQuery, resultHandler);
   });
-}
+};
 
 exports.title = function() {
   return 'Du-o-ja';
-}
+};
 
 function parseJQuery(jQuery, resultHandler) {
   console.log("Parsing");
@@ -39,7 +38,7 @@ function parseJQuery(jQuery, resultHandler) {
     if (curText.length > 0) {
       if (lastRowWasDay) {
         dishes.push(curText);
-        o = new Offer();
+        var o = new Offer();
         o.day = curDay;
         o.shortDay = curDay.substring(0, 2);
         o.dishes = dishes;
